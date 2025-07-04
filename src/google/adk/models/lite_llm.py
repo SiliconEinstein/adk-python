@@ -468,6 +468,8 @@ def _message_to_generate_content_response(
   parts = []
   if message.get("content", None):
     parts.append(types.Part.from_text(text=message.get("content")))
+    if message.get("reasoning_content", None):
+      parts.append(types.Part.from_text(text=message.get("reasoning_content")))
 
   if message.get("tool_calls", None):
     for tool_call in message.get("tool_calls"):
