@@ -79,6 +79,7 @@ class UsageMetadataChunk(BaseModel):
   prompt_tokens: int
   completion_tokens: int
   total_tokens: int
+  thoughts_token_count: int
 
 
 class LiteLLMClient:
@@ -420,6 +421,7 @@ def _model_response_to_chunk(
         prompt_tokens=response["usage"].get("prompt_tokens", 0),
         completion_tokens=response["usage"].get("completion_tokens", 0),
         total_tokens=response["usage"].get("total_tokens", 0),
+        thoughts_token_count=getattr(response["usage"]["completion_tokens_details"], "reasoning_tokens", 0),
     ), None
 
 
@@ -448,6 +450,7 @@ def _model_response_to_generate_content_response(
         prompt_token_count=response["usage"].get("prompt_tokens", 0),
         candidates_token_count=response["usage"].get("completion_tokens", 0),
         total_token_count=response["usage"].get("total_tokens", 0),
+        thoughts_token_count=getattr(response["usage"]["completion_tokens_details"], "reasoning_tokens", 0),
     )
   return llm_response
 
@@ -766,6 +769,7 @@ class LiteLlm(BaseLlm):
                 prompt_token_count=chunk.prompt_tokens,
                 candidates_token_count=chunk.completion_tokens,
                 total_token_count=chunk.total_tokens,
+                thoughts_token_count=chunk.completion_tokens_details.reasoning_tokens,
             )
 
           if (
